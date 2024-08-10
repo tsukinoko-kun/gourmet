@@ -15,7 +15,7 @@ var (
 		Use:   "gourmet",
 		Short: "Write build scripts for your Go projects in Go",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buildConfig, err := buildfile.GetBuildConfig()
+			buildConfig, err := buildfile.GetBuildConfig("build")
 			if err != nil {
 				return errors.Join(fmt.Errorf("failed to get build config"), err)
 			}
@@ -24,14 +24,14 @@ var (
 				args = []string{buildConfig.ModRoot}
 			}
 
-			if buildConfig.HasPreBuild {
+			if buildConfig.HasPreDoCmd {
 				fmt.Println("Executing prebuild cmd")
 				if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "prebuild"), true); err != nil {
 					os.Exit(2)
 				}
 			}
 
-			if buildConfig.HasBuildCmd {
+			if buildConfig.HasDoCmd {
 				fmt.Println("Executing build cmd")
 				if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "build"), true); err != nil {
 					os.Exit(2)
@@ -43,7 +43,7 @@ var (
 				}
 			}
 
-			if buildConfig.HasPostBuild {
+			if buildConfig.HasPostDoCmd {
 				fmt.Println("Executing postbuild cmd")
 				if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "postbuild"), true); err != nil {
 					os.Exit(2)

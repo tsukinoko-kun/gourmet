@@ -27,6 +27,15 @@ func RunArgv(args []string) error {
 	return cmd.Run()
 }
 
+func TestArgv(args []string) error {
+	cmd := exec.Command("go", append([]string{"test"}, args...)...)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return RunAndClear(cmd)
+}
+
 func BuildArgv(args []string) error {
 	cmd := exec.Command("go", append([]string{"build"}, args...)...)
 

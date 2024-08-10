@@ -14,7 +14,7 @@ var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "Run build scripts followed by the application",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		buildConfig, err := buildfile.GetBuildConfig()
+		buildConfig, err := buildfile.GetBuildConfig("run")
 		if err != nil {
 			return errors.Join(fmt.Errorf("failed to get build config"), err)
 		}
@@ -23,14 +23,21 @@ var runCmd = &cobra.Command{
 			args = []string{buildConfig.ModRoot}
 		}
 
-		if buildConfig.HasPreBuild {
+		if buildConfig.HasPreBuildCmd {
 			fmt.Println("Executing prebuild cmd")
 			if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "prebuild"), true); err != nil {
 				os.Exit(2)
 			}
 		}
 
-		if buildConfig.HasRunCmd {
+		if buildConfig.HasPreDoCmd {
+			fmt.Println("Executing prerun cmd")
+			if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "prerun"), true); err != nil {
+				os.Exit(2)
+			}
+		}
+
+		if buildConfig.HasDoCmd {
 			fmt.Println("Executing run cmd")
 			if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "run"), true); err != nil {
 				os.Exit(2)
@@ -42,9 +49,9 @@ var runCmd = &cobra.Command{
 			}
 		}
 
-		if buildConfig.HasPostBuild {
-			fmt.Println("Executing postbuild cmd")
-			if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "postbuild"), true); err != nil {
+		if buildConfig.HasPostDoCmd {
+			fmt.Println("Executing postrun cmd")
+			if err := util.Run(filepath.Join(buildConfig.ModRoot, "cmd", "postrun"), true); err != nil {
 				os.Exit(2)
 			}
 		}
